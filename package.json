@@ -1,6 +1,6 @@
 {
   "name": "koa-crud-router",
-  "version": "1.0.1-alpha.9",
+  "version": "1.0.1-beta.1",
   "description": "",
   "main": "index.js",
   "author": "ZaidulinKirill <zaidulinkirill@gmail.com>",

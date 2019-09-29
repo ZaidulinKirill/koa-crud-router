@@ -7,7 +7,7 @@ export default (model, query = {}) => {
       if (!propertyPath) throw ModelError.INVALID_FILTER_PROPERTY;
 
       if (propertyPath.instance === 'ObjectID') {
-        return [key, ObjectId(value)]
+        return [key, ObjectID(value)]
       } else {
         return [key, value]
       }
