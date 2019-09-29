@@ -19,7 +19,7 @@ export default ({
     model
       .aggregate([
         { $match: totalSearchQuery },
-        sortBy && { [sortBy]: sortDesc === 'true' ? -1 : 1 },
+        sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
         itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
         itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
         columns && { $project: applyProjection(columns === 'brief' ? briefColumns : columns) }
