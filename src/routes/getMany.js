@@ -1,4 +1,5 @@
 import applyProjection from '../utils/applyProjection'
+import preprocessMongoMatch from '../utils/preprocessMongoMatch'
 
 export default ({
   model,
@@ -18,7 +19,7 @@ export default ({
   const [items, total] = await Promise.all([
     model
       .aggregate([
-        { $match: totalSearchQuery },
+        { $match: preprocessMongoMatch(model, totalSearchQuery) },
         sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
         itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
         itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
