@@ -1,11 +1,12 @@
 {
   "name": "koa-crud-router",
-  "version": "1.0.1-alpha.7",
+  "version": "1.0.1-alpha.8",
   "description": "",
   "main": "index.js",
   "author": "ZaidulinKirill <zaidulinkirill@gmail.com>",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm install"
   },
   "repository": {
     "type": "git",
