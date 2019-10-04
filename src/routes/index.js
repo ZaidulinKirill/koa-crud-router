@@ -10,7 +10,8 @@ export default ({
   Router, model, prefix, briefColumns,
   searchQuery, preCreate, postCreate,
   preUpdate, postUpdate, removedKey,
-  roles, getRole = ({ user: { role } }) => role,
+  postGet, roles,
+  getRole = ({ user: { role } }) => role,
   defaultMiddleware = async (ctx, next) => { await next(); },
   middleware = {},
 }) => {
@@ -36,7 +37,9 @@ export default ({
     : async (ctx, next) => { await next(); };
 
 
-  router.get('/', authMiddleware, middleware.getMany || defaultMiddleware, getMany({ model, briefColumns, searchQuery }));
+  router.get('/', authMiddleware, middleware.getMany || defaultMiddleware, getMany({
+    model, briefColumns, searchQuery, postGet,
+  }));
   router.get('/count', authMiddleware, middleware.count || defaultMiddleware, count({ model, searchQuery }));
   router.post('/count', authMiddleware, middleware.count || defaultMiddleware, counts({ model, searchQuery }));
   router.get('/:id', authMiddleware, middleware.get || defaultMiddleware, get({ model }));
