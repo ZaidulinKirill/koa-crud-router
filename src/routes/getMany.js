@@ -5,9 +5,10 @@ export default ({
   model,
   searchQuery = () => {},
   briefColumns = '_id',
+  postGet = x => x,
 }) => async (ctx) => {
   const {
-    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns, filter = '{}', postGet = x => x,
+    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns, filter = '{}',
   } = ctx.request.query;
 
   const totalSearchQuery = {
