@@ -31,7 +31,7 @@ export default ({
         sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
         itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
         itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
-        columns && columns.length && { $project: columns },
+        columns && columns.length && { $project: applyProjection(columns) },
       ].filter(x => !!x))
       .collation({ locale: 'ru' }),
 
