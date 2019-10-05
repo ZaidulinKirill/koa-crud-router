@@ -9,7 +9,7 @@ export default ({
   includedColumns = '',
 }) => async (ctx) => {
   const {
-    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery, filter = '{}',
+    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}',
   } = ctx.request.query;
 
   const totalSearchQuery = {
@@ -20,8 +20,8 @@ export default ({
 
 
   const columns = [
-    ...(columnsQuery || '').split(',').map(x => x.trim()),
-    ...(includedColumns || '').split(',').map(x => x.trim()),
+    ...(columnsQuery.length ? columnsQuery.split(',').map(x => x.trim()) : []),
+    ...(includedColumns.length ? (includedColumns || '').split(',').map(x => x.trim()) : []),
   ];
 
   const [items, total] = await Promise.all([
