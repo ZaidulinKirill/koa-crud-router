@@ -7,13 +7,13 @@ import update from './update';
 import remove from './remove';
 
 export default ({
-  Router, model, prefix, briefColumns,
-  searchQuery, preCreate, postCreate,
-  preUpdate, postUpdate, removedKey,
-  postGet, roles,
-  getRole = ({ user: { role } }) => role,
-  defaultMiddleware = async (ctx, next) => { await next(); },
-  middleware = {},
+  Router, model, prefix,
+  searchQuery, removedKey, briefColumns,
+  preCreate, postCreate,
+  preUpdate, postUpdate,
+  postGet, includedColumns = [],
+  roles, getRole = ({ user: { role } }) => role,
+  middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
 }) => {
   const router = new Router({
     prefix,
@@ -38,7 +38,7 @@ export default ({
 
 
   router.get('/', authMiddleware, middleware.getMany || defaultMiddleware, getMany({
-    model, briefColumns, searchQuery, postGet,
+    model, briefColumns, searchQuery, postGet, includedColumns,
   }));
   router.get('/count', authMiddleware, middleware.count || defaultMiddleware, count({ model, searchQuery }));
   router.post('/count', authMiddleware, middleware.count || defaultMiddleware, counts({ model, searchQuery }));
