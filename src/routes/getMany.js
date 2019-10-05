@@ -20,7 +20,9 @@ export default ({
 
 
   const columns = [
-    ...(columnsQuery.length ? columnsQuery.split(',').map(x => x.trim()) : []),
+    ...(columnsQuery.length
+      ? (columnsQuery !== 'brief' ? columnsQuery : briefColumns).split(',').map(x => x.trim())
+      : []),
     ...(includedColumns.length ? (includedColumns || '').split(',').map(x => x.trim()) : []),
   ];
 
