@@ -6,7 +6,7 @@ export default ({
   searchQuery = () => {},
   briefColumns = '_id',
   postGet = x => x,
-  includedColumns = [],
+  includedColumns = '',
 }) => async (ctx) => {
   const {
     sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns, filter = '{}',
@@ -25,7 +25,7 @@ export default ({
         sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
         itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
         itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
-        columns && { $project: applyProjection([...columns === 'brief' ? briefColumns : columns, ...includedColumns]) },
+        columns && { $project: applyProjection((columns === 'brief' ? briefColumns : columns) + includedColumns) },
       ].filter(x => !!x))
       .collation({ locale: 'ru' }),
 

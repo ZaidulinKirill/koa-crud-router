@@ -11,7 +11,7 @@ export default ({
   searchQuery, removedKey, briefColumns,
   preCreate, postCreate,
   preUpdate, postUpdate,
-  postGet, includedColumns = [],
+  postGet, includedColumns = '',
   roles, getRole = ({ user: { role } }) => role,
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
 }) => {
