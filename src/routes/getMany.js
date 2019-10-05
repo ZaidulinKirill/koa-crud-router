@@ -9,7 +9,7 @@ export default ({
   includedColumns = '',
 }) => async (ctx) => {
   const {
-    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns, filter = '{}',
+    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery, filter = '{}',
   } = ctx.request.query;
 
   const totalSearchQuery = {
@@ -18,6 +18,12 @@ export default ({
     isRemoved: { $ne: true },
   };
 
+
+  const columns = [
+    ...(columnsQuery || '').keys.split(',').map(x => x.trim()),
+    ...(includedColumns || '').keys.split(',').map(x => x.trim()),
+  ];
+
   const [items, total] = await Promise.all([
     model
       .aggregate([
@@ -25,7 +31,7 @@ export default ({
         sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
         itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
         itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
-        columns && { $project: applyProjection((columns === 'brief' ? briefColumns : columns) + includedColumns) },
+        columns && columns.length && { $project: columns },
       ].filter(x => !!x))
       .collation({ locale: 'ru' }),
 

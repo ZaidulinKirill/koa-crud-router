@@ -1,11 +1,9 @@
-export default (keys) => {
-  if (!keys) {
+export default (keys = []) => {
+  if (!keys.length) {
     return {};
   }
 
-  const columns = keys.split(',').map(x => x.trim());
-
-  return Object.assign({ _id: 1, isRemoved: 1 }, ...columns.map(column => ({
+  return Object.assign({ _id: 1, isRemoved: 1 }, ...keys.map(column => ({
     [column]: 1,
   })));
 };
