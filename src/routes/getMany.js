@@ -20,8 +20,8 @@ export default ({
 
 
   const columns = [
-    ...(columnsQuery || '').keys.split(',').map(x => x.trim()),
-    ...(includedColumns || '').keys.split(',').map(x => x.trim()),
+    ...(columnsQuery || '').split(',').map(x => x.trim()),
+    ...(includedColumns || '').split(',').map(x => x.trim()),
   ];
 
   const [items, total] = await Promise.all([
