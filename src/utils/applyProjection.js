@@ -1,9 +1,9 @@
-export default (keys = []) => {
+export default (item, keys = []) => {
   if (!keys.length) {
-    return {};
+    return item;
   }
 
-  return Object.assign({ _id: 1, isRemoved: 1 }, ...keys.map(column => ({
-    [column]: 1,
+  return Object.assign({ _id: item._id, isRemoved: item.isRemoved }, ...keys.map(column => ({
+    [column]: item[column],
   })));
 };

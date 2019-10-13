@@ -1,5 +1,4 @@
 import applyProjection from '../utils/applyProjection';
-import preprocessMongoMatch from '../utils/preprocessMongoMatch';
 
 export default ({
   model,
@@ -28,20 +27,17 @@ export default ({
 
   const [items, total] = await Promise.all([
     model
-      .aggregate([
-        { $match: preprocessMongoMatch(model, totalSearchQuery) },
-        sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
-        itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
-        itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
-        columns && columns.length && { $project: applyProjection(columns) },
-      ].filter(x => !!x))
-      .collation({ locale: 'ru' }),
-
+      .find(totalSearchQuery)
+      .collation({ locale: 'ru' })
+      .sort(sortBy && { [sortBy]: sortDesc === 'true' ? -1 : 1 })
+      .skip(itemsPerPage !== '-1' ? (page - 1) * parseInt(itemsPerPage, 10) : 0)
+      .limit(itemsPerPage !== '-1' ? parseInt(itemsPerPage, 10) : 0),
     model.countDocuments(totalSearchQuery),
   ]);
 
   ctx.body = {
     items: items
+      .map(x => applyProjection(x, columns))
       .map(x => postGet(x)),
     total,
   };
