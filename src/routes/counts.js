@@ -1,6 +1,6 @@
 export default ({
   model,
-  preSearch = x => x,
+  preSearch = (_, x) => x,
   searchQuery = () => {},
 }) => async (ctx) => {
   const {
@@ -8,7 +8,7 @@ export default ({
   } = ctx.request.body;
 
   const totalSearchQuery = async filter => ({
-    ...await preSearch(searchQuery(ctx)),
+    ...await preSearch(ctx, searchQuery(ctx)),
     ...filter,
     isRemoved: { $ne: true },
   });

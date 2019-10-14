@@ -10,7 +10,7 @@ import remove from './remove';
 export default ({
   Router, model, prefix,
   searchQuery, removedKey, briefColumns,
-  preSearch = x => x,
+  preSearch = (_, x) => x,
   preCreate, postCreate,
   preUpdate, postUpdate,
   postGet, includedColumns = '',

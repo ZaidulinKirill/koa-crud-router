@@ -1,13 +1,13 @@
 export default ({
   model,
-  preSearch = x => x,
+  preSearch = (_, x) => x,
   searchQuery = () => {},
 }) => async (ctx) => {
   const {
     filter = '{}',
   } = ctx.request.query;
 
-  const totalSearchQuery = await preSearch({
+  const totalSearchQuery = await preSearch(ctx, {
     ...searchQuery(ctx),
     ...JSON.parse(filter),
     isRemoved: { $ne: true },

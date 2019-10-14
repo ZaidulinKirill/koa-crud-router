@@ -5,14 +5,14 @@ export default ({
   searchQuery = () => {},
   briefColumns = '_id',
   postGet = x => x,
-  preSearch = x => x,
+  preSearch = (_, x) => x,
   includedColumns = '',
 }) => async (ctx) => {
   const {
     sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}',
   } = ctx.request.query;
 
-  const totalSearchQuery = await preSearch({
+  const totalSearchQuery = await preSearch(ctx, {
     ...searchQuery(ctx),
     ...JSON.parse(filter),
     isRemoved: { $ne: true },
