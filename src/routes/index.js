@@ -6,6 +6,7 @@ import create from './create';
 import update from './update';
 import removeById from './removeById';
 import remove from './remove';
+import patch from './patch';
 
 export default ({
   Router, model, prefix,
@@ -14,6 +15,7 @@ export default ({
   preCreate, postCreate,
   preUpdate, postUpdate,
   postGet, includedColumns = '',
+  prePatch, postPatch,
   roles, getRole = ({ user: { role } }) => role,
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
 }) => {
@@ -49,6 +51,7 @@ export default ({
   router.put('/', authMiddleware, middleware.update || defaultMiddleware, update({ model, preUpdate, postUpdate }));
   router.delete('/:id', authMiddleware, middleware.remove || defaultMiddleware, removeById({ model, removedKey }));
   router.delete('/', authMiddleware, middleware.remove || defaultMiddleware, remove({ model, removedKey }));
+  router.patch('/:id', authMiddleware, middleware.patch || defaultMiddleware, patch({ model, prePatch, postPatch }));
 
   return router;
 };
