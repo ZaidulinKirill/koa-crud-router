@@ -14,7 +14,8 @@ export default ({
   preMatch = () => [], preSearch = (_, x) => x,
   preCreate, postCreate,
   preUpdate, postUpdate,
-  postGet, includedColumns = '',
+  postGetMany, postGet,
+  includedColumns = '',
   prePatch, postPatch,
   roles, getRole = ({ user: { role } }) => role,
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
@@ -42,11 +43,11 @@ export default ({
 
 
   router.get('/', authMiddleware, middleware.getMany || defaultMiddleware, getMany({
-    model, briefColumns, searchQuery, postGet, includedColumns, preMatch, preSearch,
+    model, briefColumns, searchQuery, postGetMany, includedColumns, preMatch, preSearch,
   }));
   router.get('/count', authMiddleware, middleware.count || defaultMiddleware, count({ model, searchQuery, preSearch }));
   router.post('/count', authMiddleware, middleware.count || defaultMiddleware, counts({ model, searchQuery, preSearch }));
-  router.get('/:id', authMiddleware, middleware.get || defaultMiddleware, get({ model }));
+  router.get('/:id', authMiddleware, middleware.get || defaultMiddleware, get({ model, postGet }));
   router.post('/', authMiddleware, middleware.create || defaultMiddleware, create({ model, preCreate, postCreate }));
   router.put('/', authMiddleware, middleware.update || defaultMiddleware, update({ model, preUpdate, postUpdate }));
   router.delete('/:id', authMiddleware, middleware.remove || defaultMiddleware, removeById({ model, removedKey }));

@@ -5,7 +5,7 @@ export default ({
   model,
   searchQuery = () => {},
   briefColumns = '_id',
-  postGet = x => x,
+  postGetMany = x => x,
   preMatch = () => [],
   preSearch = (_, x) => x,
   includedColumns = '',
@@ -50,8 +50,7 @@ export default ({
   ]);
 
   ctx.body = {
-    items: items
-      .map(x => postGet(x)),
+    items: postGetMany(items),
     total,
   };
 };
