@@ -11,7 +11,7 @@ import patch from './patch';
 export default ({
   Router, model, prefix,
   searchQuery, removedKey, briefColumns,
-  preSearch = (_, x) => x,
+  preMatch = () => [], preSearch = (_, x) => x,
   preCreate, postCreate,
   preUpdate, postUpdate,
   postGet, includedColumns = '',
@@ -42,7 +42,7 @@ export default ({
 
 
   router.get('/', authMiddleware, middleware.getMany || defaultMiddleware, getMany({
-    model, briefColumns, searchQuery, postGet, includedColumns, preSearch,
+    model, briefColumns, searchQuery, postGet, includedColumns, preMatch, preSearch,
   }));
   router.get('/count', authMiddleware, middleware.count || defaultMiddleware, count({ model, searchQuery, preSearch }));
   router.post('/count', authMiddleware, middleware.count || defaultMiddleware, counts({ model, searchQuery, preSearch }));

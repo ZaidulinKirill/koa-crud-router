@@ -1,3 +1,5 @@
+import parseFilters from '../utils/parseFilters';
+
 export default ({
   model,
   preSearch = (_, x) => x,
@@ -7,9 +9,11 @@ export default ({
     filter = '{}',
   } = ctx.request.query;
 
+  const parsedFilter = parseFilters(filter);
+
   const totalSearchQuery = await preSearch(ctx, {
     ...searchQuery(ctx),
-    ...JSON.parse(filter),
+    ...parsedFilter,
     isRemoved: { $ne: true },
   });
 

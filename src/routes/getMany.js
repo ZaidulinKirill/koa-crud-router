@@ -1,10 +1,12 @@
 import applyProjection from '../utils/applyProjection';
+import parseFilters from '../utils/parseFilters';
 
 export default ({
   model,
   searchQuery = () => {},
   briefColumns = '_id',
   postGet = x => x,
+  preMatch = () => [],
   preSearch = (_, x) => x,
   includedColumns = '',
 }) => async (ctx) => {
@@ -12,11 +14,18 @@ export default ({
     sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}',
   } = ctx.request.query;
 
-  const totalSearchQuery = await preSearch(ctx, {
+  const parsedFilter = parseFilters(filter);
+
+  const query = {
     ...searchQuery(ctx),
-    ...JSON.parse(filter),
+    ...parsedFilter,
     isRemoved: { $ne: true },
-  });
+  };
+
+  const [startPipeline, totalSearchQuery] = await Promise.all([
+    preMatch(query),
+    preSearch(ctx, query),
+  ]);
 
   const columns = [
     ...(columnsQuery.length
@@ -28,6 +37,7 @@ export default ({
   const [items, total] = await Promise.all([
     model
       .aggregate([
+        ...startPipeline,
         { $match: totalSearchQuery },
         sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
         itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
