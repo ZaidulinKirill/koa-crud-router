@@ -46,7 +46,12 @@ export default ({
       ].filter(x => !!x))
       .collation({ locale: 'ru' }),
 
-    model.countDocuments(totalSearchQuery),
+    model
+      .aggregate([
+        ...startPipeline,
+        { $match: totalSearchQuery },
+        { $count: 'count' },
+      ]).then(({ count }) => count),
   ]);
 
   ctx.body = {
