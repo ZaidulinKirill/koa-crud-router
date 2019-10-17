@@ -51,7 +51,7 @@ export default ({
         ...startPipeline,
         { $match: totalSearchQuery },
         { $count: 'count' },
-      ]).then(({ count }) => count),
+      ]).then(result => result[0].count),
   ]);
 
   ctx.body = {
