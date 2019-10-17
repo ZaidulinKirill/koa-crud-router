@@ -5,5 +5,9 @@ export default filter => JSON.parse(filter, (name, value) => {
     return ObjectID(value.replace('_(', '').replace(')', ''));
   }
 
+  if (value.startsWith && value.startsWith('_d(') && value.endsWith(')')) {
+    return new Date(value.replace('_d(', '').replace(')', ''));
+  }
+
   return value;
 });
