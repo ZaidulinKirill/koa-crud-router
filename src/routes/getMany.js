@@ -34,7 +34,7 @@ export default ({
     ...(includedColumns.length ? (includedColumns || '').split(',').map(x => x.trim()) : []),
   ];
 
-  const [{ count: [{ total }], items }] = await model
+  const [{ count: [totalInfo], items }] = await model
     .aggregate([
       ...startPipeline,
       { $match: totalSearchQuery },
@@ -56,7 +56,7 @@ export default ({
 
   ctx.body = {
     items: postGetMany(items),
-    total,
+    total: (totalInfo || {}).total || 0,
   };
 };
 
