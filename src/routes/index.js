@@ -11,7 +11,7 @@ import patch from './patch';
 export default ({
   Router, model, prefix,
   searchQuery, removedKey, briefColumns,
-  preMatch = () => [], preSearch = (_, x) => x,
+  preMatch, preSearch = (_, x) => x,
   preCreate, postCreate,
   preUpdate, postUpdate,
   postGetMany, postGet,
