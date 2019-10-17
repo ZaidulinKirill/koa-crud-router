@@ -34,7 +34,14 @@ export default ({
     ...(includedColumns.length ? (includedColumns || '').split(',').map(x => x.trim()) : []),
   ];
 
-  const [{ count: [totalInfo], items }] = await model
+  const itemsQuery = [
+    sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
+    itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
+    itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
+    columns && columns.length && { $project: applyProjection(columns) },
+  ].filter(x => !!x);
+
+  const [{ count: [totalInfo], items = [] }] = await model
     .aggregate([
       ...startPipeline,
       { $match: totalSearchQuery },
@@ -43,12 +50,7 @@ export default ({
           count: [
             { $count: 'total' },
           ],
-          items: [
-            sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
-            itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
-            itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
-            columns && columns.length && { $project: applyProjection(columns) },
-          ].filter(x => !!x),
+          ...itemsQuery && itemsQuery.length ? [{ items: itemsQuery }] : [],
         },
       },
     ])
