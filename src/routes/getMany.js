@@ -23,7 +23,7 @@ export default ({
   };
 
   const [startPipeline, totalSearchQuery] = await Promise.all([
-    preMatch(query),
+    preMatch(ctx, query),
     preSearch(ctx, query),
   ]);
 
