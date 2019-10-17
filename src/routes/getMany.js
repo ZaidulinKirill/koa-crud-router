@@ -50,7 +50,7 @@ export default ({
           count: [
             { $count: 'total' },
           ],
-          ...itemsQuery && itemsQuery.length ? [{ items: itemsQuery }] : [],
+          ...itemsQuery && itemsQuery.length ? { items: itemsQuery } : {},
         },
       },
     ])
