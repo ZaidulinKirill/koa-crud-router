@@ -41,8 +41,8 @@ export default ({
     columns && columns.length && { $project: applyProjection(columns) },
   ].filter(x => !!x);
 
-  const [{ count: [totalInfo], items = [] }] = await model
-    .aggregate([
+  const [{ count: [totalInfo], items }] = await itemsQuery.length
+    ? model.aggregate([
       ...startPipeline,
       { $match: totalSearchQuery },
       {
@@ -50,11 +50,19 @@ export default ({
           count: [
             { $count: 'total' },
           ],
-          ...itemsQuery && itemsQuery.length ? { items: itemsQuery } : {},
+          items: itemsQuery,
         },
       },
     ])
-    .collation({ locale: 'ru' });
+    : model.aggregate([
+      ...startPipeline,
+      { $match: totalSearchQuery },
+    ]).then(allItems => ({
+      count: { total: allItems.length },
+      items: allItems,
+    }))
+
+      .collation({ locale: 'ru' });
 
   ctx.body = {
     items: postGetMany(items),
