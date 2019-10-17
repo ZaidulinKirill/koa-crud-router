@@ -1,89 +1,74 @@
-import applyProjection from '../utils/applyProjection';
-import parseFilters from '../utils/parseFilters';
+import Router from 'koa-router';
+import mongoose from 'mongoose';
+import crudRouter from 'koa-crud-router';
+import { Client, ClientEstateRelationship, Estate } from '../../models';
 
-export default ({
-  model,
-  searchQuery = () => {},
-  briefColumns = '_id',
-  postGetMany = x => x,
-  preMatch = () => [],
-  preSearch = (_, x) => x,
-  includedColumns = '',
-}) => async (ctx) => {
-  const {
-    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}',
-  } = ctx.request.query;
+export default crudRouter({
+  Router,
+  model: Client,
+  prefix: '/clients',
+  roles: ['superAdmin', 'manager'],
+  searchQuery: ({ request: { query: { search } } }) => ({
+    ...search && {
+      search,
+      $or: [
+        { secondName: new RegExp(search, 'i') },
+        { firstName: new RegExp(search, 'i') },
+        { middleName: new RegExp(search, 'i') },
+        { phones: { $elemMatch: { phone: search, isRemoved: { $ne: true }, isFavourite: true } } },
+        { emails: { $elemMatch: { email: search, isRemoved: { $ne: true }, isFavourite: true } } },
+      ],
+    },
+  }),
+  postGet: async (item) => {
+    const isOwner = !!await Estate.findOne({
+      ownerClientId: item._id,
+      isRemoved: { $ne: true },
+    });
 
-  const parsedFilter = parseFilters(filter);
+    return {
+      ...item.toObject(),
+      tags: [
+        item.relatedClientId ? 'additional' : null,
+        isOwner ? 'owner' : null,
+      ].filter(x => !!x),
+    };
+  },
+  preSearch: async (ctx, filters) => {
+    const {
+      estateId, userId, search, phone, ...other
+    } = filters;
+    const relationships = await ClientEstateRelationship.find({
+      estateId,
+      isRemoved: { $ne: true },
+    });
 
-  const query = {
-    ...searchQuery(ctx),
-    ...parsedFilter,
-    isRemoved: { $ne: true },
-  };
+    const filterByUser = () => {
+      if (ctx.isManager) {
+        return {
+          ...(!search || search.length <= 3) && { userId: mongoose.Types.ObjectId(ctx.user._id) },
+        };
+      }
 
-  const [startPipeline, totalSearchQuery] = await Promise.all([
-    preMatch(ctx, query),
-    preSearch(ctx, query),
-  ]);
+      return {};
+    };
 
-  const columns = [
-    ...(columnsQuery.length
-      ? (columnsQuery !== 'brief' ? columnsQuery : briefColumns).split(',').map(x => x.trim())
-      : []),
-    ...(includedColumns.length ? (includedColumns || '').split(',').map(x => x.trim()) : []),
-  ];
-
-  const itemsQuery = [
-    sortBy && { $sort: { [sortBy]: sortDesc === 'true' ? -1 : 1 } },
-    itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
-    itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
-    columns && columns.length && { $project: applyProjection(columns) },
-  ].filter(x => !!x);
-
-  const [{ count: [totalInfo], items }] = await itemsQuery.length
-    ? model.aggregate([
-      ...startPipeline,
-      { $match: totalSearchQuery },
-      {
-        $facet: {
-          count: [
-            { $count: 'total' },
-          ],
-          items: itemsQuery,
+    return {
+      ...other,
+      ...filterByUser(),
+      ...estateId && {
+        _id: {
+          $in: relationships.map(x => x.clientId).map(mongoose.Types.ObjectId),
         },
       },
-    ])
-    : model.aggregate([
-      ...startPipeline,
-      { $match: totalSearchQuery },
-    ]).then(allItems => ({
-      count: { total: allItems.length },
-      items: allItems,
-    }))
-
-      .collation({ locale: 'ru' });
-
-  ctx.body = {
-    items: postGetMany(items),
-    total: (totalInfo || {}).total || 0,
-  };
-};
-
-
-// {
-//   $lookup: {
-//     from: 'authors',
-//     let: { authorId: '$author' },
-//     pipeline: [{
-//       $match: {
-//         $expr: {
-//           $eq: ['$_id', '$$authorId'],
-//         },
-//       },
-//     }],
-//     as: 'author',
-//   },
-// },
-// { $unwind: '$author' },
-// { $match: activeAuthors ? { 'author.isActive': 'Yes' } : {} }
+      ...phone && { phones: { $elemMatch: { phone, isRemoved: { $ne: true } } } },
+    };
+  },
+  preCreate: async ({ request: { body }, user }) => ({
+    ...body,
+    userId: user._id,
+    serialNumber: (((
+      await Client.findOne().sort({ serialNumber: -1 })) || {}).serialNumber || 0
+    ) + 1,
+  }),
+});
