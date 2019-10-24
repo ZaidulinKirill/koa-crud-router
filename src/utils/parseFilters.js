@@ -9,5 +9,9 @@ export default filter => JSON.parse(filter, (name, value) => {
     return new Date(value.replace('_d(', '').replace(')', ''));
   }
 
+  if (value.startsWith && value.startsWith('_r(') && value.endsWith(')')) {
+    return new RegExp(value.replace('_r(', '').replace(')', ''));
+  }
+
   return value;
 });
