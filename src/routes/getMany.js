@@ -56,7 +56,7 @@ export default ({
     ]).collation({ locale: 'ru' });
 
     ctx.body = {
-      items: postGetMany(items),
+      items: await postGetMany(items),
       total: (totalInfo || {}).total || 0,
     };
   } else {
@@ -66,7 +66,7 @@ export default ({
     ]).collation({ locale: 'ru' });
 
     ctx.body = {
-      items: postGetMany(items),
+      items: await postGetMany(items),
       total: items.length,
     };
   }
