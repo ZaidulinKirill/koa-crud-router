@@ -27,7 +27,7 @@ export default ({
 
   const authMiddleware = (route) => {
     const currentRoles = routeRoles[route] || roles;
-    return currentRoles
+    return currentRoles && currentRoles.length
       ? async (ctx, next) => {
         if (currentRoles.includes(getRole(ctx))) {
           await next();
