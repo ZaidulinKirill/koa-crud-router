@@ -1,4 +1,6 @@
-export default ({ model, removedKey = 'isRemoved' }) => async (ctx) => {
+export default ({
+  model, removedKey = 'isRemoved',
+}) => async (ctx) => {
   await model.updateOne({
     ...(ctx.request.query || {}),
     [removedKey]: { $ne: true },

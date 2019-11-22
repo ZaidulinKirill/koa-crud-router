@@ -17,6 +17,7 @@ export default ({
   postGetMany, postGet,
   includedColumns = '',
   prePatch, postPatch,
+  preDelete, postDelete,
   roles = [], routeRoles = {},
   getRole = ({ user: { role } }) => role,
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
@@ -47,8 +48,12 @@ export default ({
   router.get('/:id', authMiddleware('get'), middleware.get || defaultMiddleware, get({ model, postGet }));
   router.post('/', authMiddleware('create'), middleware.create || defaultMiddleware, create({ model, preCreate, postCreate }));
   router.put('/', authMiddleware('update'), middleware.update || defaultMiddleware, update({ model, preUpdate, postUpdate }));
-  router.delete('/:id', authMiddleware('removeById'), middleware.remove || defaultMiddleware, removeById({ model, removedKey }));
-  router.delete('/', authMiddleware('remove'), middleware.remove || defaultMiddleware, remove({ model, removedKey }));
+  router.delete('/:id', authMiddleware('removeById'), middleware.remove || defaultMiddleware, removeById({
+    model, removedKey, preDelete, postDelete,
+  }));
+  router.delete('/', authMiddleware('remove'), middleware.remove || defaultMiddleware, remove({
+    model, removedKey, preDelete, postDelete,
+  }));
   router.patch('/:id', authMiddleware('patch'), middleware.patch || defaultMiddleware, patch({ model, prePatch, postPatch }));
 
   return router;
