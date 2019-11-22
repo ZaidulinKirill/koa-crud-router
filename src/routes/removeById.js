@@ -7,7 +7,7 @@ export default ({
   ctx.status = 200;
 
   if (postDelete) {
-    const item = model.findOne({ _id });
+    const item = await model.findOne({ _id });
     await postDelete(item);
   }
 };
