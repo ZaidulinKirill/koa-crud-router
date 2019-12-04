@@ -19,6 +19,7 @@ export default ({
   prePatch, postPatch,
   preDelete, postDelete,
   roles = [], routeRoles = {},
+  preRouter, postRouter,
   getRole = ({ user: { role } }) => role,
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
 }) => {
@@ -40,6 +41,10 @@ export default ({
   };
 
 
+  if (preRouter) {
+    preRouter(router, authMiddleware('custom'));
+  }
+
   router.get('/', authMiddleware('getMany'), middleware.getMany || defaultMiddleware, getMany({
     model, briefColumns, searchQuery, postGetMany, includedColumns, preMatch, preSearch,
   }));
@@ -55,6 +60,10 @@ export default ({
     model, removedKey, preDelete, postDelete,
   }));
   router.patch('/:id', authMiddleware('patch'), middleware.patch || defaultMiddleware, patch({ model, prePatch, postPatch }));
+
+  if (postRouter) {
+    postRouter(router, authMiddleware('custom'));
+  }
 
   return router;
 };
