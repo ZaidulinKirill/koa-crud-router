@@ -20,7 +20,7 @@ export default ({
   preDelete, postDelete,
   roles = [], routeRoles = {},
   preRouter, postRouter,
-  getRole = ({ user: { role } }) => role,
+  getRole = ({ user }) => (user ? user.role : undefined),
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
 }) => {
   const router = new Router({
