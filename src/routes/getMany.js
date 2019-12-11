@@ -11,15 +11,15 @@ export default ({
   includedColumns = '',
 }) => async (ctx) => {
   const {
-    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}',
+    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}', includeRemoved,
   } = ctx.request.query;
 
   const parsedFilter = parseFilters(filter);
 
   const query = {
-    isRemoved: { $ne: true },
     ...searchQuery(ctx),
     ...parsedFilter,
+    ...includeRemoved !== 'true' ? { isRemoved: { $ne: true } } : {},
   };
 
   const [startPipeline, totalSearchQuery] = await Promise.all([
