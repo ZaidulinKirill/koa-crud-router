@@ -17,9 +17,9 @@ export default ({
   const parsedFilter = parseFilters(filter);
 
   const query = {
+    isRemoved: { $ne: true },
     ...searchQuery(ctx),
     ...parsedFilter,
-    isRemoved: { $ne: true },
   };
 
   const [startPipeline, totalSearchQuery] = await Promise.all([
