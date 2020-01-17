@@ -20,6 +20,7 @@ export default ({
   preDelete, postDelete,
   roles = [], routeRoles = {},
   preRouter, postRouter,
+  postResponse,
   getRole = ({ user }) => (user ? user.role : undefined),
   middleware = {}, defaultMiddleware = async (ctx, next) => { await next(); },
 }) => {
@@ -46,7 +47,7 @@ export default ({
   }
 
   router.get('/', authMiddleware('getMany'), middleware.getMany || defaultMiddleware, getMany({
-    model, briefColumns, searchQuery, postGetMany, includedColumns, preMatch, preSearch,
+    model, briefColumns, searchQuery, postGetMany, includedColumns, preMatch, preSearch, postResponse,
   }));
   router.get('/count', authMiddleware('count'), middleware.count || defaultMiddleware, count({ model, searchQuery, preSearch }));
   router.post('/count', authMiddleware('counts'), middleware.count || defaultMiddleware, counts({ model, searchQuery, preSearch }));

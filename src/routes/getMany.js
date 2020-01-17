@@ -9,6 +9,7 @@ export default ({
   preMatch = () => [],
   preSearch = (_, x) => x,
   includedColumns = '',
+  postResponse,
 }) => async (ctx) => {
   const {
     sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns: columnsQuery = '', filter = '{}', includeRemoved,
@@ -55,19 +56,33 @@ export default ({
       },
     ]).collation({ locale: 'ru' });
 
-    ctx.body = {
-      items: await postGetMany(items),
-      total: (totalInfo || {}).total || 0,
-    };
+    const totalItems = await postGetMany(items)
+    const totalCount = (totalInfo || {}).total || 0
+
+    if (postResponse) {
+      postResponse(ctx, totalItems, totalCount)
+    } else {
+      ctx.body = {
+        items: totalItems,
+        total: totalCount,
+      };
+    }
   } else {
     const items = await model.aggregate([
       ...startPipeline,
       { $match: totalSearchQuery },
     ]).collation({ locale: 'ru' });
 
-    ctx.body = {
-      items: await postGetMany(items),
-      total: items.length,
-    };
+    const totalItems = await postGetMany(items)
+    const totalCount = items.length
+
+    if (postResponse) {
+      postResponse(ctx, totalItems, totalCount)
+    } else {
+      ctx.body = {
+        items: totalItems,
+        total: totalCount,
+      };
+    }
   }
 };
