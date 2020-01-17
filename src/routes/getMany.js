@@ -77,7 +77,7 @@ export default ({
     const totalCount = items.length
 
     if (postResponse) {
-      postResponse(ctx, totalItems, totalCount)
+      await postResponse(ctx, totalItems, totalCount)
     } else {
       ctx.body = {
         items: totalItems,
