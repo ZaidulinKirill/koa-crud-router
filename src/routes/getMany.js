@@ -60,7 +60,7 @@ export default ({
     const totalCount = (totalInfo || {}).total || 0
 
     if (postResponse) {
-      postResponse(ctx, totalItems, totalCount)
+      await postResponse(ctx, totalItems, totalCount)
     } else {
       ctx.body = {
         items: totalItems,
