@@ -1,9 +1,8 @@
 {
   "name": "koa-crud-router",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "author": "ZaidulinKirill <zaidulinkirill@gmail.com>",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
